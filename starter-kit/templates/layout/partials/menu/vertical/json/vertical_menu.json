@@ -1,0 +1,28 @@
+{
+  "menu": [
+    {
+      "url": "index",
+      "icon": "menu-icon tf-icons bx bx-home-circle",
+      "name": "P\u00E1gina Inicial",
+      "slug": "index"
+    },
+    {
+      "url": "page-2",
+      "icon": "menu-icon tf-icons bx bx-search",
+      "name": "Buscar Curr\u00EDculo",
+      "slug": "page-2"
+    },
+    {
+      "url": "page-3",
+      "icon": "menu-icon tf-icons bx bx-bar-chart-alt-2",
+      "name": "Acompanhamento RH",
+      "slug": "page-3"
+    },
+    {
+      "url": "manage-jobs",
+      "icon": "menu-icon tf-icons bx bx-briefcase",
+      "name": "Gerenciar",
+      "slug": "manage-jobs"
+    }
+  ]
+}

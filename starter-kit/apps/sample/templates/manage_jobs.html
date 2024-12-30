@@ -1,0 +1,91 @@
+{% extends layout_path %}
+
+{% load i18n %}
+
+{% block title %}Gerenciar Vagas{% endblock title %}
+
+{% block content %}
+<h4 class="py-4 mb-6">Gerenciar Vagas</h4>
+
+<div class="col-xxl">
+  <div class="card mb-6">
+    <div class="card-header d-flex align-items-center justify-content-between">
+      <h5 class="mb-0">Cadastro de Vaga</h5>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="row mb-6">
+          <label class="col-sm-2 col-form-label" for="basic-icon-default-fullname">Título</label>
+          <div class="col-sm-10">
+            <div class="input-group input-group-merge">
+              <span id="basic-icon-default-fullname2" class="input-group-text"><i class="bx bx-briefcase"></i></span>
+              <input type="text" class="form-control" id="basic-icon-default-fullname" name="titulo" value="{{ form.titulo.value|default:'' }}" placeholder="Título da Vaga" required />
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary">Salvar Vaga</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Vagas Registradas</h5>
+    </div>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Data de Publicação</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for vaga in vagas %}
+          <tr class="{% if vaga.status == 'fechada' %}{% else %}{% endif %}">
+            <td>{{ vaga.titulo }}</td>
+            <td>{{ vaga.data_publicacao }}</td>
+            <td>
+              <span class="badge {% if vaga.status == 'fechada' %}bg-danger{% else %}bg-success{% endif %}">
+                {{ vaga.get_status_display }}
+              </span>
+            </td>
+            <td>
+              {% if vaga.status == 'aberta' %}
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="vaga_id" value="{{ vaga.id }}">
+                <button type="submit" name="fechar_vaga" style="width: 90px;height: 32px" class="btn btn-primary">Preenchida</button>
+              </form>
+              {% endif %}
+              <form method="post" action="{% url 'delete-vaga' vaga.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-header">
+      <h5 class="mb-0">Estatísticas de Vagas</h5>
+    </div>
+    <div class="card-body">
+      <p>Total de Vagas: {{ total_vagas }}</p>
+      <p>Vagas Abertas: {{ vagas_abertas }}</p>
+      <p>Vagas Preenchidas: {{ vagas_fechadas }}</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

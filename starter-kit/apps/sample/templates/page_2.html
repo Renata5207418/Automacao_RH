@@ -1,0 +1,167 @@
+
+{% extends layout_path %}
+
+{% load i18n %}
+
+{% block title %}Buscar Currículos{% endblock title %}
+
+{% block content %}
+
+<meta charset="UTF-8">
+<h4 class="py-4 mb-6">Buscar Currículos</h4>
+<div class="col-xxl">
+  <div class="card mb-6">
+    <div class="card-header d-flex align-items-center justify-content-between">
+      <h5 class="mb-0">Busca Detalhada de Currículos</h5>
+    </div>
+    <div class="card-body">
+      <form method="get" action="{% url 'page-2' %}">
+        <div class="row mb-3">
+          <div class="col-sm-6">
+            <label for="nome">Nome</label>
+            <input type="text" class="form-control" name="nome" id="nome" placeholder="Digite o nome do candidato" value="{{ request.GET.nome }}">
+          </div>
+          <div class="col-sm-6">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" name="email" id="email" placeholder="Digite o email do candidato" value="{{ request.GET.email }}">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-6">
+            <label for="telefone">Telefone</label>
+            <input type="text" class="form-control" name="telefone" id="telefone" placeholder="Digite o telefone do candidato" value="{{ request.GET.telefone }}">
+          </div>
+          <div class="col-sm-6">
+            <label for="vaga_interesse">Vaga de Interesse</label>
+            <input type="text" class="form-control" name="vaga_interesse" id="vaga_interesse" placeholder="Digite a vaga de interesse" value="{{ request.GET.vaga_interesse }}">
+          </div>
+        </div>
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-primary" type="submit">Buscar</button>
+        </div>
+      </form>
+      {% if resultados %}
+      <h5 class="mt-4">Resultados da Busca:</h5>
+      <div class="list-group">
+        {% for candidato in resultados %}
+        <div class="list-group-item mb-3">
+          <div class="row align-items-center">
+            <div class="col-md-3 text-center d-flex flex-column align-items-center">
+                {% if candidato.foto %}
+                    <img src="{{ candidato.foto.url }}" alt="{{ candidato.nome }}" class="img-thumbnail mb-2" style="width: 180px; height: 180px; object-fit: cover; border-radius: 50%;">
+                {% else %}
+                    <img src="{% static 'images/default-avatar-new.png' %}" alt="Sem Foto" class="img-thumbnail mb-2" style="width: 180px; height: 180px; object-fit: cover; border-radius: 50%;">
+                {% endif %}
+                <div class="d-flex justify-content-center mt-3">
+                    <a href="{{ candidato.curriculo.url }}" onclick="viewDocument('{{ candidato.curriculo.url }}')" class="btn btn-info" style="width: 100px;">Visualizar Currículo</a>
+                    <a href="{{ candidato.curriculo.url }}" class="btn btn-secondary btn-sm" download style="width: 100px;">Baixar Currículo</a>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+              <h5 style="font-weight: bold; text-transform: uppercase;">{{ candidato.nome }}</h5>
+              <p><strong>Email:</strong> {{ candidato.email }}</p>
+              <p><strong>Telefone:</strong> {{ candidato.telefone }}</p>
+              <p><strong>Processo de Seleção:</strong> {{ candidato.get_processo_selecao_display }}</p>
+              <p><strong>Resultado:</strong> {{ candidato.resultado|default_if_none:'' }}</p>
+              <p><strong>Vaga de Interesse:</strong> {{ candidato.vaga_interesse }}</p>
+              <p><strong>Observações:</strong> {{ candidato.observacoes }}</p>
+
+              <div class="d-flex justify-content-end mt-2">
+                <button class="btn btn-warning btn-sm me-2" onclick="toggleEditForm({{ candidato.id }})">Editar</button>
+                <form method="post" action="{% url 'delete-candidato' candidato.id %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                </form>
+              </div>
+            </div>
+
+            <div id="edit-form-{{ candidato.id }}" class="mt-4" style="display:none;">
+              <form method="post" enctype="multipart/form-data" action="{% url 'edit-candidato' candidato.id %}">
+                {% csrf_token %}
+                <div class="row mb-3">
+                  <div class="col-sm-6">
+                    <label for="nome-{{ candidato.id }}">Nome</label>
+                    <input type="text" class="form-control" name="nome" id="nome-{{ candidato.id }}" value="{{ candidato.nome }}">
+                  </div>
+                  <div class="col-sm-6">
+                    <label for="email-{{ candidato.id }}">Email</label>
+                    <input type="email" class="form-control" name="email" id="email-{{ candidato.id }}" value="{{ candidato.email }}">
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-6">
+                    <label for="telefone-{{ candidato.id }}">Telefone</label>
+                    <input type="text" class="form-control" name="telefone" id="telefone-{{ candidato.id }}" value="{{ candidato.telefone }}">
+                  </div>
+                  <div class="col-sm-6">
+                    <label for="vaga_interesse-{{ candidato.id }}">Vaga de Interesse</label>
+                    <input type="text" class="form-control" name="vaga_interesse" id="vaga_interesse-{{ candidato.id }}" value="{{ candidato.vaga_interesse }}">
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-6">
+                    <label for="processo_selecao-{{ candidato.id }}">Processo de Seleção</label>
+                    <select class="form-select" name="processo_selecao" id="processo_selecao-{{ candidato.id }}">
+                      <option value="aguardando_entrevista" {% if candidato.processo_selecao == 'aguardando_entrevista' %}selected{% endif %}>Aguardando Entrevista</option>
+                      <option value="entrevistado" {% if candidato.processo_selecao == 'entrevistado' %}selected{% endif %}>Entrevistado</option>
+                    </select>
+                  </div>
+                  <div class="col-sm-6">
+                    <label for="resultado-{{ candidato.id }}">Resultado</label>
+                    <select class="form-select" name="resultado" id="resultado-{{ candidato.id }}">
+                      <option value="" {% if not candidato.resultado %}selected{% endif %}>Selecione o resultado</option>
+                      <option value="aprovado" {% if candidato.resultado == 'Aprovado' %}selected{% endif %}>Aprovado</option>
+                      <option value="reprovado" {% if candidato.resultado == 'Reprovado' %}selected{% endif %}>Reprovado</option>
+                      <option value="futura" {% if candidato.resultado == 'Futuro' %}selected{% endif %}>Vaga Futura</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="observacoes-{{ candidato.id }}">Observações</label>
+                  <textarea class="form-control" name="observacoes" id="observacoes-{{ candidato.id }}" rows="3">{{ candidato.observacoes }}</textarea>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-6">
+                    <label for="foto-{{ candidato.id }}">Foto</label>
+                    <input type="file" class="form-control" name="foto" id="foto-{{ candidato.id }}">
+                  </div>
+                  <div class="col-sm-6">
+                    <label for="curriculo-{{ candidato.id }}">Currículo</label>
+                    <input type="file" class="form-control" name="curriculo" id="curriculo-{{ candidato.id }}">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button type="submit" class="btn btn-success me-2">Salvar Alterações</button>
+                  <button type="button" class="btn btn-secondary" onclick="toggleEditForm({{ candidato.id }})">Cancelar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-muted">Nenhum resultado encontrado.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+function viewDocument(url) {
+
+    event.preventDefault();
+    window.open(window.location.origin + url, '_blank');
+}
+function toggleEditForm(id) {
+    var form = document.getElementById('edit-form-' + id);
+    if (form.style.display === 'none' || form.style.display === '') {
+        form.style.display = 'block';
+    } else {
+        form.style.display = 'none';
+    }
+}
+</script>
+
+{% endblock content %}

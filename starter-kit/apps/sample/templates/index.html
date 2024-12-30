@@ -1,0 +1,144 @@
+{% extends layout_path %}
+
+{% load i18n %}
+
+{% block title %}Envio de Currículos{% endblock title %}
+
+{% block content %}
+<h4 class="py-4 mb-6">Cadastrar Currículo</h4>
+
+{% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="col-xxl">
+  <div class="card mb-6">
+    <div class="card-header d-flex align-items-center justify-content-between">
+      <h5 class="mb-0">Cadastro de Candidato</h5>
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row mb-6">
+          <label class="col-sm-2 col-form-label" for="id_nome">Nome</label>
+          <div class="col-sm-10">
+            <div class="input-group input-group-merge">
+              <span id="basic-icon-default-fullname2" class="input-group-text"><i class="bx bx-user"></i></span>
+              <input type="text" class="form-control" id="id_nome" name="nome"
+                {% if form.nome.value %}value="{{ form.nome.value }}"{% endif %}
+                placeholder="João Silva" aria-label="João Silva" aria-describedby="basic-icon-default-fullname2" />
+            </div>
+            <small class="text-danger">* Campo Obrigátorio</small>
+          </div>
+        </div>
+
+        <div class="row mb-6">
+          <label class="col-sm-2 col-form-label" for="id_email">Email</label>
+          <div class="col-sm-10">
+            <div class="input-group input-group-merge">
+              <span class="input-group-text"><i class="bx bx-envelope"></i></span>
+              <input type="email" class="form-control" id="id_email" name="email"
+                {% if form.email.value %}value="{{ form.email.value }}"{% endif %}
+                placeholder="joao.silva@exemplo.com" aria-label="joao.silva@exemplo.com" aria-describedby="basic-icon-default-email2" />
+            </div>
+            <small class="text-danger">* Campo Obrigátorio</small>
+          </div>
+        </div>
+
+        <div class="row mb-6">
+          <label class="col-sm-2 col-form-label" for="id_telefone">Telefone</label>
+          <div class="col-sm-10">
+            <div class="input-group input-group-merge">
+              <span id="basic-icon-default-phone2" class="input-group-text"><i class="bx bx-phone"></i></span>
+              <input type="text" class="form-control phone-mask" id="id_telefone" name="telefone"
+                {% if form.telefone.value %}value="{{ form.telefone.value }}"{% endif %}
+                placeholder="(00)99999-9999" aria-label="(00)99999-9999" aria-describedby="basic-icon-default-phone2" />
+            </div>
+            <small class="text-danger">* Campo Obrigátorio</small>
+          </div>
+        </div>
+
+        <div class="row mb-6">
+            <label class="col-sm-2 col-form-label" for="vaga_interesse">Vaga</label>
+            <div class="col-sm-10">
+                <div class="input-group input-group-merge">
+                    <span id="basic-icon-default-vaga" class="input-group-text"><i class="bx bx-briefcase"></i></span>
+                    <input type="text" class="form-control" id="vaga_interesse" name="vaga_interesse"
+                      {% if form.vaga_interesse.value %}value="{{ form.vaga_interesse.value }}"{% endif %}
+                      placeholder="Ex: Fiscal, Administrativo" aria-label="Vaga de interesse" aria-describedby="basic-icon-default-vaga" />
+                </div>
+              <small class="text-danger">* Campo Obrigátorio</small>
+            </div>
+        </div>
+
+        <div class="row mb-6">
+          <label class="col-sm-2 col-form-label" for="id_observacoes">Observações</label>
+          <div class="col-sm-10">
+            <div class="input-group input-group-merge">
+              <span id="basic-icon-default-message2" class="input-group-text"><i class="bx bx-comment"></i></span>
+              <textarea id="id_observacoes" class="form-control" name="observacoes"
+                aria-describedby="basic-icon-default-message2">{% if form.observacoes.value %}{{ form.observacoes.value }}{% endif %}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-6 select2-primary">
+            <label class="col-sm-2 col-form-label" for="id_processo_selecao">Processo de Seleção</label>
+            <div class="col-sm-9">
+              <select id="id_processo_selecao" name="processo_selecao" class="form-select">
+                <option value="aguardando_entrevista" {% if form.processo_selecao.value == 'aguardando_entrevista' %}selected{% endif %}>Aguardando Entrevista</option>
+                <option value="entrevistado" {% if form.processo_selecao.value == 'entrevistado' %}selected{% endif %}>Entrevistado</option>
+              </select>
+            </div>
+        </div>
+
+        <div class="row mb-6 select2-primary">
+              <label class="col-sm-2 col-form-label" for="id_resultado">Resultado</label>
+              <div class="col-sm-9">
+                  <select id="id_resultado" name="resultado" class="form-select">
+                      <option value="" {% if not form.resultado.value %}selected{% endif %}>Selecione o resultado</option>
+                      <option value="aprovado" {% if form.resultado.value == 'aprovado' %}selected{% endif %}>Aprovado</option>
+                      <option value="reprovado" {% if form.resultado.value == 'reprovado' %}selected{% endif %}>Reprovado</option>
+                      <option value="futura" {% if form.resultado.value == 'futura' %}selected{% endif %}>Vaga Futura</option>
+                  </select>
+              </div>
+          </div>
+
+        <div class="row mb-6">
+          <label class="col-sm-2 col-form-label" for="id_foto">Foto do Candidato</label>
+          <div class="col-sm-10">
+            <input type="file" id="id_foto" name="foto" class="form-control" accept=".jpg, .jpeg, .png" />
+          </div>
+        </div>
+
+        <div class="row mb-6">
+          <label class="col-sm-2 col-form-label" for="id_curriculo">Currículo</label>
+          <div class="col-sm-10">
+            <input type="file" id="id_curriculo" name="curriculo" class="form-control" accept=".pdf, .doc, .docx, .txt" onchange="updateFileName()">
+            <span id="file-label" class="ml-2">Nenhum arquivo selecionado</span>
+            <small class="text-danger">* Campo Obrigátorio</small>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary mt-4">Enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  function updateFileName() {
+    const input = document.getElementById('id_curriculo');
+    const fileLabel = document.getElementById('file-label');
+    fileLabel.textContent = input.files.length > 0 ? input.files[0].name : 'Nenhum arquivo selecionado';
+  }
+</script>
+{% endblock %}

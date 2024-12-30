@@ -1,0 +1,45 @@
+# Ignorar arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de ambiente e configurações locais
+.env
+.env.prod
+*.env
+*.secret
+
+# Logs
+*.log
+logs/
+debug.log
+soap_debug.log
+
+# Banco de dados local
+db.sqlite3
+*.db
+
+# Arquivos de cache do Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Configurações do IDE
+.idea/
+.vscode/
+
+# Dependências e builds
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+
+# Arquivos temporários
+*.bak
+*.tmp
+*.swp
+
+# Docker
+docker-compose.override.yml
+*.dockerignore
